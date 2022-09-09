@@ -61,7 +61,8 @@
     "code-runner.ignoreSelection": true,
     "files.associations": {
       "*.py": "python",
-      "vector": "cpp"
+      "vector": "cpp",
+      "iostream": "cpp"
     },
     // --------------------------------------------------------------------------------------
   }

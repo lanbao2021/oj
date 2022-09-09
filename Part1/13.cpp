@@ -1,48 +1,62 @@
 #include <iostream>
+#include <string>
+#include <vector>
+
 using namespace std;
 
-int main(){
-    char s[1000];
-    cin >> s;
-
-    int len=0;
-    while(s[len] != '\0'){
-        len++;
-    }
-
-    int arr[1000]={-1};
-
-    for(int i=0, j=len-1; i<len && j>-1; i++, j--){
-        arr[i] = s[i] - s[j];
-    }
-
-    for(int i=0; i<len; i++)
-        cout << arr[i] << " ";
-    cout << endl;
-
-    int result_index[2]={0};
-    int start=0, end=0;
-    int max=0;
-
-    for(int i=0; i<len; ++i){
-        if(arr[i]==0){
-            start=i;
-            end=i;
+class Solution {
+public:
+    string longestPalindrome(string s) {
+        int n = s.size();
+        if (n < 2) {
+            return s;
         }
-        else{
-            continue;
+
+        int maxLen = 1;
+        int begin = 0;
+        // dp[i][j] 表示 s[i..j] 是否是回文串
+        vector<vector<int>> dp(n, vector<int>(n));
+        // 初始化：所有长度为 1 的子串都是回文串
+        for (int i = 0; i < n; i++) {
+            dp[i][i] = true;
         }
-        for(int j=i+1; j<len; j++){
-            if(arr[j] != 0){
-                break;
+        // 递推开始
+        // 先枚举子串长度
+        for (int L = 2; L <= n; L++) {
+            // 枚举左边界，左边界的上限设置可以宽松一些
+            for (int i = 0; i < n; i++) {
+                // 由 L 和 i 可以确定右边界，即 j - i + 1 = L 得
+                int j = L + i - 1;
+                // 如果右边界越界，就可以退出当前循环
+                if (j >= n) {
+                    break;
+                }
+
+                if (s[i] != s[j]) {
+                    dp[i][j] = false;
+                } else {
+                    if (j - i < 3) { // j-i<3意味着j-i的最大取值为2，注意这是索引，所以实际长度+1
+                        dp[i][j] = true; // 长度为3，头尾相等，那必定回文
+                    } else { // 一旦j-i大于等于3，即长度大于4，那就不好说了，
+                        dp[i][j] = dp[i + 1][j - 1]; // 要判断一下中间的内容，所以i+1, j-1
+                    }
+                }
+
+                // 只要 dp[i][L] == true 成立，就表示子串 s[i..L] 是回文，此时记录回文长度和起始位置
+                if (dp[i][j] && j - i + 1 > maxLen) {
+                    maxLen = j - i + 1;
+                    begin = i;
+                }
             }
-            end++;
         }
-        if((end-start+1)>max){
-            result_index[0]=start;
-            result_index[1]=end;
-        }
+        return s.substr(begin, maxLen);
     }
-    cout << result_index[0] << " " << result_index[1] << endl;
+};
+
+int main(){
+    Solution solution = Solution();
+    string s;
+    cin >> s;
+    cout << solution.longestPalindrome(s);
     return 0;
 }
