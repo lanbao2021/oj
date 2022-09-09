@@ -1,5 +1,6 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
 using namespace std;
 
 int main(){
@@ -8,21 +9,30 @@ int main(){
     do{
         cin >> x;
         v.push_back(x);
-    }while(cin.get()!='\n');
-    
-    for(int i=0; i<v.size(); i++){
-        cout << v[i] << " ";
-    }
-    cout << endl;
+    }while(cin.get() != '\n');
 
     vector<int> s;
     do{
         cin >> x;
         s.push_back(x);
     }while(cin.get() != '\n');
-    for(int i=0; i<s.size(); i++){
-        cout << s[i] << " ";
+
+    sort(v.begin(), v.end());
+    sort(s.begin(), s.end());
+
+    int n=0, i=0, j=0;
+    while(i<v.size() && j<s.size()){
+        if(v[i] <= s[j]){
+            n++;
+            i++;
+            j++;
+            continue;
+        }
+        if(v[i]>s[j]){
+            j++;
+            continue;
+        }
     }
-    cout << endl;
+    cout << n << endl;
     return 0;
 }
