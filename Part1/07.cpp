@@ -12,7 +12,7 @@ struct ListNode{
 class Solution {
 public:
     ListNode* sortList(ListNode* head) {
-        return sortList(head, nullptr);
+        return sortList(head, nullptr); // 注意这个tail，我在Prodrafts推导了[-1 5 3 4 0]的过程，可以得到正确答案
     }
 
     ListNode* sortList(ListNode* head, ListNode* tail) {
@@ -36,7 +36,7 @@ public:
     }
 
     ListNode* merge(ListNode* head1, ListNode* head2) {
-        ListNode* dummyHead = new ListNode(0);
+        ListNode* dummyHead = new ListNode(0); // 这个dummyHead使用后没有手动回收
         ListNode* temp = dummyHead, *temp1 = head1, *temp2 = head2;
         while (temp1 != nullptr && temp2 != nullptr) {
             if (temp1->val <= temp2->val) {
@@ -57,7 +57,35 @@ public:
     }
 };
 
-int main(){
+ListNode* TailInsert(ListNode* &L){
+    int x;
+    L = (ListNode*)malloc(sizeof(ListNode));
+    ListNode *s, *r = L;
+    while(cin >> x){
+        s = (ListNode*)malloc(sizeof(ListNode));
+        s->val = x;
+        r->next = s; //在r结点后插入新元素
+        r=s; // 永远保持r指向最后一个结点
+    }
+    r->next = NULL;
+    
+    return L->next; // 不要头结点
+}
 
+void print(ListNode* L){
+    ListNode* tmp=L;
+    while(tmp){
+        cout << tmp->val << " ";
+        tmp = tmp->next;
+    }
+}
+int main(){
+    ListNode* L;
+    L = TailInsert(L);
+    //print(L);
+
+    Solution solution = Solution();
+    L = solution.sortList(L);
+    print(L);
     return 0;
 }
