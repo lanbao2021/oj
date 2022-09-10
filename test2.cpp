@@ -4,10 +4,6 @@
 #include <vector>
 using namespace std;
 
-// 输入数据要学会“getline函数和istringstream的使用”
-// 参考文章1：https://blog.csdn.net/qq_35987777/article/details/107675938
-// 参考文章2：http://c.biancheng.net/view/1345.html
-
 int Partition(vector<int> &A, int low, int high){
     int pivot = A[low];
     while(low<high){
