@@ -4,6 +4,6 @@ using namespace std;
 
 int main(){
     string s1="ab", s2="c";
-    cout << s1+s2 << endl;
+    cout <<char(9+'0') << endl;
     return 0;
 }
