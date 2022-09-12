@@ -3,6 +3,7 @@
 #include <string>
 #include <sstream>
 #include <limits>
+#include <map>
 using namespace std;
 
 vector<int> single_price;
@@ -23,8 +24,6 @@ void get_special(){
     while(is>>s){
         tmp.push_back(stoi(s));
     }
-    special_price.push_back(tmp.back());
-    tmp.pop_back();
     special_item_num.push_back(tmp);
 }
 
@@ -40,47 +39,43 @@ void get_needs(){
     }
 }
 
-bool judge(vector<int> &tmp_needs){
-    for(int i=0; i<needs.size(); i++){
-        if(needs[i] < tmp_needs[i] || needs[i] > tmp_needs[i])
-            return false;
+class Solution {
+public:
+    vector<int> needs_;
+    vector<int> price_;
+    vector<vector<int> > special_;
+    int n;
+    map<vector<int>, int> dp;
+    int shoppingOffers(vector<int>& price, vector<vector<int>>& special, vector<int>& needs) {
+        price_ = price;
+        special_ = special;
+        n = needs.size();
+        return dfs(needs);
     }
-    return true;
-}
-void dfs(int val, int index_one, int index_two, vector<int> tmp_needs){
-    if(index_one+1 == needs.size()){
-        return;
-    }
-    if(index_two+1 == special_num){
-        return;
-    }
-    if(judge(tmp_needs)){
-        ans.push_back(val);
-        return;
-    }
-    else{
-        return;
-    }
+    int dfs(vector<int> needs) {
+        if (dp.count(needs) != 0)
+            return dp[needs];
 
-    for(int i=0; i<needs.size(); i++){
-        tmp_needs[i]++;
-        dfs(val+single_price[i], index_one+1, index_two, tmp_needs);
-        tmp_needs[i]--;
-        dfs(val, index_one+1, index_two, tmp_needs);
-    }
+        int Min = 0;
+        for (int i = 0; i < needs.size(); i++)
+            Min += needs[i] * price_[i];
 
-    for(int i=0; i<special_num; i++){
-        for(int j=0; j<needs.size(); j++){
-            tmp_needs[j] += special_item_num[i][j];
+        for (int i = 0; i < special_.size(); i++) {
+            vector<int> nextNeeds = needs;
+            bool flag = true;
+            for (int j = 0; j < n; j++) {
+                if (special_[i][j] > nextNeeds[j])
+                    flag = false;
+                nextNeeds[j] -= special_[i][j];
+            }
+            if (!flag)
+                continue;
+            Min = min(Min, dfs(nextNeeds) + special_[i][n]);
         }
-        dfs(val+special_price[i], index_one, index_two+1, tmp_needs);
-        
-        for(int j=0; j<needs.size(); j++){
-            tmp_needs[j] -= special_item_num[i][j];
-        }
-        dfs(val, index_one, index_two+1, tmp_needs);
+        return dp[needs] = Min;
     }
-}
+};
+
 
 int main(){
     string str;
@@ -99,31 +94,7 @@ int main(){
 
     get_needs();
 
-    vector<int> tmp_needs;
-    for(int i=0; i<needs.size(); i++){
-        tmp_needs.push_back(0);
-    }
-    dfs(0, 0, 0, tmp_needs);
-    cout << ans.size() << endl;
-
-    // cout << "\n single_price: ";
-    // for(int i=0; i<single_price.size(); i++){
-    //     cout << single_price[i] << ' ';
-    // }
-    // cout << endl;
-
-    // cout << "\n special_nums: \n";
-    // for(int i=0; i<special_item_num.size(); i++){
-    //     for(int j=0; j<special_item_num[i].size(); j++){
-    //         cout << special_item_num[i][j] << ' ';
-    //     }
-    //     cout << endl;
-    // }
-
-    // cout << "\n needs: ";
-    // for(int i=0; i<needs.size(); i++){
-    //     cout << needs[i] << ' ';
-    // }
-    // cout << endl;
+    Solution solution = Solution();
+    cout << solution.shoppingOffers(single_price, special_item_num, needs) << endl;
     return 0;
 }
