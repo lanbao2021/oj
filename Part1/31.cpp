@@ -5,13 +5,13 @@
 #include <limits>
 using namespace std;
 
-int MIN = INT_MAX;
-
 vector<int> single_price;
 int special_num;
 vector<int> special_price;
 vector<vector<int>> special_item_num;
 vector<int> needs;
+
+vector<int> ans;
 
 void get_special(){
     vector<int> tmp;
@@ -40,48 +40,45 @@ void get_needs(){
     }
 }
 
-bool judge(vector<int> &get_num){
+bool judge(vector<int> &tmp_needs){
     for(int i=0; i<needs.size(); i++){
-        if(needs[i] != get_num[i])
+        if(needs[i] < tmp_needs[i] || needs[i] > tmp_needs[i])
             return false;
     }
     return true;
 }
-void dfs(int val, vector<int> get_num){
-    if(val>=MIN){
+void dfs(int val, int index_one, int index_two, vector<int> tmp_needs){
+    if(index_one+1 == needs.size()){
         return;
     }
-    if(judge(needs)){
-        MIN = val;
+    if(index_two+1 == special_num){
+        return;
+    }
+    if(judge(tmp_needs)){
+        ans.push_back(val);
         return;
     }
     else{
         return;
     }
-    // choose single price, has 'single_price.size()' choice
-    for(int i=0; i<single_price.size(); i++){
-        val += single_price[i]; // choose it
-        get_num[i]++;
-        dfs(val, get_num);
-        val -= single_price[i]; // drop it choose next
-        get_num[i]--;
-        dfs(val, get_num);
-    }
-    // choose a special_price
-    for(int i=0; i<special_num; i++){
-        // choose it
-        val += special_price[i];
-        for(int j=0; j<needs.size(); j++){
-            get_num[i] += special_item_num[i][j];
-        }
-        dfs(val, get_num);
 
-        // drop it choose next
-        val -= special_price[i];
+    for(int i=0; i<needs.size(); i++){
+        tmp_needs[i]++;
+        dfs(val+single_price[i], index_one+1, index_two, tmp_needs);
+        tmp_needs[i]--;
+        dfs(val, index_one+1, index_two, tmp_needs);
+    }
+
+    for(int i=0; i<special_num; i++){
         for(int j=0; j<needs.size(); j++){
-            get_num[j] -= special_item_num[i][j];
+            tmp_needs[j] += special_item_num[i][j];
         }
-        dfs(val, get_num);
+        dfs(val+special_price[i], index_one, index_two+1, tmp_needs);
+        
+        for(int j=0; j<needs.size(); j++){
+            tmp_needs[j] -= special_item_num[i][j];
+        }
+        dfs(val, index_one, index_two+1, tmp_needs);
     }
 }
 
@@ -102,12 +99,12 @@ int main(){
 
     get_needs();
 
-    vector<int> get_num;
+    vector<int> tmp_needs;
     for(int i=0; i<needs.size(); i++){
-        get_num.push_back(0);
+        tmp_needs.push_back(0);
     }
-    dfs(0, get_num);
-    cout << MIN << endl;
+    dfs(0, 0, 0, tmp_needs);
+    cout << ans.size() << endl;
 
     // cout << "\n single_price: ";
     // for(int i=0; i<single_price.size(); i++){
