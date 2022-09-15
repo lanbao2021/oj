@@ -54,7 +54,7 @@ public:
     }
     int dfs(vector<int> needs) {
         if (dp.count(needs) != 0)
-            return dp[needs];
+            return dp[needs]; // 这不是最后出口，而是一个剪枝的策略。
 
         int Min = 0;
         for (int i = 0; i < needs.size(); i++)
@@ -65,7 +65,7 @@ public:
             bool flag = true;
             for (int j = 0; j < n; j++) {
                 if (special_[i][j] > nextNeeds[j])
-                    flag = false;
+                    flag = false; // 这里直接break进入下一个special即可
                 nextNeeds[j] -= special_[i][j];
             }
             if (!flag)
